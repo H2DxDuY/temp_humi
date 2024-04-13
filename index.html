@@ -1,0 +1,94 @@
+<!DOCTYPE HTML><html>
+<head>
+  <meta charset = "UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+  <style>
+    body {
+      min-width: 310px;
+    	max-width: 800px;
+    	height: 200px;
+      margin: 0 auto;
+    }
+    h2 {
+      font-family: Arial;
+      font-size: 2.5rem;
+      text-align: center;
+    }
+    p { font-size: 3.0rem;
+      text-align: center; }
+  </style>
+</head>
+<body>
+  <h2>ĐO NHIỆT ĐỘ - ĐỘ ẨM</h2>
+  <p>
+    <i class="fas fa-thermometer-half" style="color:#059e8a;"></i> 
+    <span class="dht-labels">Nhiệt độ:</span> 
+    <span id="temperature">%TEMPERATURE%</span>
+    <sup class="units">&deg;C</sup>
+  </p>
+  <p>
+    <i class="fas fa-tint" style="color:#00add6;"></i> 
+    <span class="dht-labels">Độ ẩm:</span>
+    <span id="humidity">%HUMIDITY%</span>
+    <sup class="units">&percnt;</sup>
+  </p>
+</body>
+<script>
+// MQTT broker URI
+    var mqttBrokerURI = "wss://9e0c3d990e904bd0aea8a77d2bf4d660.s1.eu.hivemq.cloud:8884/mqtt";
+        
+        // MQTT credentials
+    var mqttUsername = "h2d0202";
+        var mqttPassword = "Duyho@ng03";
+        
+        // Khởi tạo MQTT client với URI của broker và một ID duy nhất cho client
+    var client = new Paho.MQTT.Client(mqttBrokerURI, "webClient");
+        
+        // Thiết lập các callback handlers cho client MQTT
+    client.onConnectionLost = onConnectionLost;
+    client.onMessageArrived = onMessageArrived;
+        
+        // Kết nối với broker MQTT
+    var options = 
+    {
+        useSSL: true,
+        userName: mqttUsername,
+        password: mqttPassword,
+        onSuccess: onConnect,
+        onFailure: onFailure
+    };
+    client.connect(options);
+        
+        // Hàm được gọi khi client kết nối thành công
+    function onConnect() {
+        console.log("Connected");
+            // Đăng ký theo dõi chủ đề MQTT mà ESP8266 sử dụng để gửi dữ liệu
+        client.subscribe("esp8266/dht22");
+     }
+        
+        // Hàm được gọi khi client mất kết nối
+    function onConnectionLost(responseObject) {
+        if (responseObject.errorCode !== 0) {
+                console.log("onConnectionLost:" + responseObject.errorMessage);
+        }
+    }
+        
+        // Hàm được gọi khi một tin nhắn MQTT mới được nhận
+    function onMessageArrived(message) {
+        console.log("onMessageArrived:" + message.payloadString);
+            // Phân tích JSON payload của tin nhắn để lấy dữ liệu nhiệt độ và độ ẩm
+        var data = JSON.parse(message.payloadString);
+            // Cập nhật hiển thị nhiệt độ và độ ẩm trên trang web
+        document.getElementById("temperature").textContent = data["nhiệt độ"];
+        document.getElementById("humidity").textContent = data["độ ẩm"];
+    }
+        
+        // Hàm được gọi khi kết nối với broker MQTT không thành công
+    function onFailure(responseObject) {
+        console.log("onFailure:" + responseObject.errorMessage);
+    }   
+</script>
+</html>
