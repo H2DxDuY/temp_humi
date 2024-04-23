@@ -85,7 +85,7 @@
     
 </body>
 <script>
-
+    var gt = 0;
     // MQTT broker URI
     var mqttBrokerURI = "wss://9e0c3d990e904bd0aea8a77d2bf4d660.s1.eu.hivemq.cloud:8884/mqtt";
     // MQTT credentials
@@ -141,25 +141,11 @@
         console.log("onMessageArrived:" + message.payloadString);
             // Phân tích JSON payload của tin nhắn để lấy dữ liệu nhiệt độ và độ ẩm
         var data = JSON.parse(message.payloadString);
-        // const statusLight = data["onoffgreen"]
-        // if (statusLight == 1) {
-           
-        //     document.querySelector('.button2').innerHTML="OFF"
-        //     document.querySelector('.button2').style.backgroundColor = "#195B6A"
-        //     document.querySelector('.lightRed').style.backgroundColor = "red"
-        //     document.querySelector('.lightGreen').style.backgroundColor = "green"
-        //     document.querySelector('.lightYellow').style.backgroundColor = "yellow"
-        //     status= "on"
-        // }
-        // else {
-        //     document.querySelector('.button2').innerHTML="ON"
-        //     document.querySelector('.button2').style.backgroundColor = "#77878A"
-        //     document.querySelector('.lightRed').style.backgroundColor = "#77878A"
-        //     document.querySelector('.lightGreen').style.backgroundColor = "#77878A"
-        //     document.querySelector('.lightYellow').style.backgroundColor = "#77878A"
-        //     status="off"
-        // }
-
+        // Cập nhật hiển thị nhiệt độ và độ ẩm trên trang web
+        document.getElementById("temperature").textContent = data["nhiệt độ"];
+        document.getElementById("humidity").textContent = data["độ ẩm"];
+        document.getElementById("cbas").textContent = data["cảm biến ánh sáng"];
+        
         // Kiểm tra nếu chế độ tự động được bật
         if (autoStatus == 0) 
         {
@@ -205,10 +191,6 @@
             }
         }
 
-        // Cập nhật hiển thị nhiệt độ và độ ẩm trên trang web
-        document.getElementById("temperature").textContent = data["nhiệt độ"];
-        document.getElementById("humidity").textContent = data["độ ẩm"];
-        document.getElementById("cbas").textContent = data["cảm biến ánh sáng"];
     }
 
     const BtnAuto =  document.querySelector(".buttonAuto")
