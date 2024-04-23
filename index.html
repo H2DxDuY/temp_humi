@@ -166,6 +166,7 @@
             const sensorValue = data["cảm biến ánh sáng"];
             // Nếu giá trị cảm biến ánh sáng thấp, bật đèn
             if (sensorValue < 800) { // Điều chỉnh giá trị theo yêu cầu
+                alert("Giá trị cảm biến lớn hơn 800 => Bật LED!!!")
                 document.querySelector('.buttonAuto').innerHTML = "AUTO-ON";
                 document.querySelector('.buttonAuto').style.backgroundColor = "#195B6A";
                 document.querySelector('.lightRed').style.backgroundColor = "red"
@@ -174,6 +175,7 @@
             } 
             else 
             {
+                alert("Giá trị cảm biến nhỏ hơn 800 => Tắt LED!!!")
                 document.querySelector('.buttonAuto').innerHTML = "AUTO-OFF";
                 document.querySelector('.buttonAuto').style.backgroundColor = "#77878A";
                 document.querySelector('.lightRed').style.backgroundColor = "#77878A"
