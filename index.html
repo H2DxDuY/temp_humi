@@ -19,23 +19,21 @@
       text-align: center;
       border-radius: 10px;
       margin-bottom: 20px;
-      font-size: 50px;
+      font-size: 2.5rem;
     }
     .sensor-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.5rem;
+      font-size: 1rem;
       margin: 20px 0;
+      flex-wrap: wrap;
     }
     .sensor {
-        font-size: 35px;
+        font-size: 1.25rem;
         display: flex;
         align-items: center;
-        margin-right: 30px;
-    }
-    .sensor:last-child {
-      margin-right: 0;
+        margin: 10px;
     }
     .sensor i {
       margin-right: 10px;
@@ -49,8 +47,8 @@
       color: white; 
       padding: 16px 40px;
       text-decoration: none; 
-      font-size: 1.25rem; 
-      margin: 2px; 
+      font-size: 1rem; 
+      margin: 10px; 
       cursor: pointer;
       border-radius: 10px;
       transition: transform 0.3s ease;
@@ -61,35 +59,55 @@
     }
     .lightBox {
       display: flex;
-      gap: 30px;
+      gap: 10px;
       justify-content: center;
       border: 4px solid red;
       padding: 10px;
       border-radius: 20px;
       margin-top: 20px;
-      width: 35%;
+      width: 90%;
+      max-width: 600px;
       margin-left: auto;
       margin-right: auto;
+      flex-wrap: wrap;
     }
     .light {
-        width: 200px;
-        height: 200px;
+        width: 100px;
+        height: 100px;
         background-color: #77878A;
         border-radius: 50%;
     }
     .container {
-        width: 60%;
+        width: 90%;
+        max-width: 800px;
         height: 400px;
         margin: 0 auto;
     }
     p { 
-      font-size: 3.0rem;
+      font-size: 1.5rem;
       text-align: center; 
     }
     .zoom:hover {
       transform: scale(1.2);
     }
-
+    @media (min-width: 768px) {
+      header {
+        font-size: 3.5rem;
+      }
+      .sensor-container {
+        font-size: 1.5rem;
+      }
+      .sensor {
+        font-size: 1.75rem;
+      }
+      .button {
+        font-size: 1.25rem;
+      }
+      .light {
+        width: 150px;
+        height: 150px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -111,24 +129,21 @@
     </div>
   </div>
   <div id="chart-container" class="container"></div>
-  <p style="text-align: center; font-size: 3.5rem;">
+  <p style="text-align: center; font-size: 2rem;">
     <i class="fas fa-sun" style="color:#e9901b;"></i> 
     <span class="dht-labels">Cảm biến ánh sáng:</span>
     <span id="cbas">%CBAS%</span>
     <sup class="units">lux</sup>
   </p>
   <!-- Thêm nút tự động -->
-  <p class = "zoom"><a><button id="btnAuto" class="button buttonAuto">AUTO-OFF</button></a></p>
+  <p class="zoom"><a><button id="btnAuto" class="button buttonAuto">AUTO-OFF</button></a></p>
   <!-- Nút ON/OFF bằng tay -->
-  <p class = "zoom"><a ><button id="btn2" class="button button2">OFF</button></a></p>
+  <p class="zoom"><a><button id="btn2" class="button button2">OFF</button></a></p>
   <div class="lightBox">
     <div class="light lightYellow"></div>
     <div class="light lightGreen"></div>
     <div class="light lightRed"></div>
   </div>
-  <p>
-
-  </p>
 </body>
 <script>
     var gt = 0;
@@ -195,6 +210,7 @@
       document.getElementById("temperature").textContent = temp;
       document.getElementById("humidity").textContent = humidity;
       document.getElementById("cbas").textContent = data["cảm biến ánh sáng"];
+      document.getElementById("cbas").textContent = data["cảm biến ánh sáng"];
       if (data["autoMode"]) {
         autoStatus = "on"
         BtnAuto.innerHTML="AUTO-ON"
@@ -217,9 +233,6 @@
         autoStatus = "off"
         btn2.style.display="" 
       }
-
-
-        document.getElementById("cbas").textContent = data["cảm biến ánh sáng"];
     }
 
     // Tạo biểu đồ nhiệt độ và độ ẩm
@@ -276,7 +289,6 @@
     const BtnAuto = document.querySelector(".buttonAuto");
     let status = "off";
   
-
     BtnAuto.addEventListener("click", function () {
       if (autoStatus === "off") {
         BtnAuto.innerHTML = "AUTO-ON";
@@ -352,6 +364,6 @@
         document.querySelector('.lightYellow').style.backgroundColor = "#77878A";
       }
     });
-    
-    </script>
+
+  </script>
 </html>
