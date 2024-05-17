@@ -1,47 +1,75 @@
-<!DOCTYPE HTML><html>
+<!DOCTYPE HTML>
+<html>
 <head>
-  <meta charset = "UTF-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js"></script>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
   <style>
     body {
-      min-width: 310px;
-    	max-width: 800px;
-    	height: 200px;
-      margin: 0 auto;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
     }
-    h2 {
-      font-family: Arial;
-      font-size: 2.5rem;
+    header {
+      background-color: #195B6A;
+      color: white;
+      padding: 20px 0;
       text-align: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 50px;
     }
-    p { 
-        font-size: 3.0rem;
-        text-align: center; 
+    .sensor-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      margin: 20px 0;
+    }
+    .sensor {
+        font-size: 35px;
+        display: flex;
+        align-items: center;
+        margin-right: 30px;
+    }
+    .sensor:last-child {
+      margin-right: 0;
+    }
+    .sensor i {
+      margin-right: 10px;
+    }
+    .sensor span {
+      margin-right: 5px;
     }
     .button { 
-        background-color: #195B6A; 
-        border: none; 
-        color: white; 
-        padding: 16px 40px;
-        text-decoration: none; 
-        font-size: 30px; 
-        margin: 2px; 
-        cursor: pointer;
-        border-radius: 10px;
+      background-color: #195B6A; 
+      border: none; 
+      color: white; 
+      padding: 16px 40px;
+      text-decoration: none; 
+      font-size: 1.25rem; 
+      margin: 2px; 
+      cursor: pointer;
+      border-radius: 10px;
+      transition: transform 0.3s ease;
     }
     .button2 {
-        background-color: #77878A;
+      background-color: #77878A;
+      transition: transform 0.3s ease;
     }
     .lightBox {
-        display: flex;
-        gap: 30px;
-        justify-content: center;
-        border: 4px solid red;
-        padding: 10px;
-        border-radius: 20px;
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      border: 4px solid red;
+      padding: 10px;
+      border-radius: 20px;
+      margin-top: 20px;
+      width: 35%;
+      margin-left: auto;
+      margin-right: auto;
     }
     .light {
         width: 200px;
@@ -49,40 +77,58 @@
         background-color: #77878A;
         border-radius: 50%;
     }
+    .container {
+        width: 60%;
+        height: 400px;
+        margin: 0 auto;
+    }
+    p { 
+      font-size: 3.0rem;
+      text-align: center; 
+    }
+    .zoom:hover {
+      transform: scale(1.2);
+    }
 
   </style>
 </head>
 <body>
-    <h2>Chiếu sáng thông minh</h2>
-    <p>
-        <i class="fas fa-thermometer-half" style="color:#059e8a;"></i> 
-        <span class="dht-labels">Nhiệt độ:</span> 
-        <span id="temperature">%TEMPERATURE</span>
-        <sup class="units">&deg;C</sup>
-    </p>
-    <p>
-        <i class="fas fa-tint" style="color:#00add6;"></i> 
-        <span class="dht-labels">Độ ẩm:</span>
-        <span id="humidity">%HUMIDITY%</span>
-        <sup class="units">&percnt;</sup>
-    </p>
-    <p>
-        <i class="fas fa-sun" style="color:#e9901b;"></i> 
-        <span class="dht-labels">Cảm biến ánh sáng:</span>
-        <span id="cbas">%CBAS%</span>
-        <sup class="units">lux</sup>
-    </p>
-    <!-- Thêm nút tự động -->
-    <p><a><button id="btnAuto" class="button buttonAuto">AUTO-OFF</button></a></p>
-
-    <!-- Nút ON/OFF bằng tay -->
-    <p><a ><button id="btn2" class="button button2">OFF</button></a></p>
-    <div class="lightBox">
-        <div class="light lightYellow"> </div>
-        <div class="light lightGreen"> </div>
-        <div class="light lightRed"> </div>
+  <header>
+      Chiếu sáng ngoài trời thông minh
+  </header>
+  <div class="sensor-container">
+    <div class="sensor">
+      <i class="fas fa-thermometer-half" style="color:#059e8a;"></i> 
+      <span class="dht-labels">Nhiệt độ:</span> 
+      <span id="temperature">%TEMPERATURE%</span>
+      <sup class="units">&deg;C</sup>
     </div>
-    
+    <div class="sensor">
+      <i class="fas fa-tint" style="color:#00add6;"></i> 
+      <span class="dht-labels">Độ ẩm:</span>
+      <span id="humidity">%HUMIDITY%</span>
+      <sup class="units">&percnt;</sup>
+    </div>
+  </div>
+  <div id="chart-container" class="container"></div>
+  <p style="text-align: center; font-size: 3.5rem;">
+    <i class="fas fa-sun" style="color:#e9901b;"></i> 
+    <span class="dht-labels">Cảm biến ánh sáng:</span>
+    <span id="cbas">%CBAS%</span>
+    <sup class="units">lux</sup>
+  </p>
+  <!-- Thêm nút tự động -->
+  <p class = "zoom"><a><button id="btnAuto" class="button buttonAuto">AUTO-OFF</button></a></p>
+  <!-- Nút ON/OFF bằng tay -->
+  <p class = "zoom"><a ><button id="btn2" class="button button2">OFF</button></a></p>
+  <div class="lightBox">
+    <div class="light lightYellow"></div>
+    <div class="light lightGreen"></div>
+    <div class="light lightRed"></div>
+  </div>
+  <p>
+
+  </p>
 </body>
 <script>
     var gt = 0;
@@ -102,149 +148,210 @@
     // Kết nối với broker MQTT
     var options = 
     {
-        useSSL: true,
-        userName: mqttUsername,
-        password: mqttPassword,
-        onSuccess: onConnect,
-        onFailure: onFailure
+      useSSL: true,
+      userName: mqttUsername,
+      password: mqttPassword,
+      onSuccess: onConnect,
+      onFailure: onFailure
     };
     client.connect(options);
         
-        // Hàm được gọi khi client kết nối thành công
+    // Hàm được gọi khi client kết nối thành công
     function onConnect() 
     {
-        console.log("Connected");
-        // Đăng ký theo dõi chủ đề MQTT mà ESP8266 sử dụng để gửi dữ liệu
-        client.subscribe("esp8266/dht22cbas");
+      console.log("Connected");
+      // Đăng ký theo dõi chủ đề MQTT mà ESP8266 sử dụng để gửi dữ liệu
+      client.subscribe("esp8266/dht22cbas");
     }
 
     // Hàm được gọi khi client mất kết nối
     function onConnectionLost(responseObject) 
     {
-        if (responseObject.errorCode !== 0) 
-        {
-                console.log("onConnectionLost:" + responseObject.errorMessage);
-        }
+      if (responseObject.errorCode !== 0) 
+      {
+        console.log("onConnectionLost:" + responseObject.errorMessage);
+      }
     }
 
     // Hàm được gọi khi kết nối với broker MQTT không thành công
     function onFailure(responseObject)
     {
-        console.log("onFailure:" + responseObject.errorMessage);
+      console.log("onFailure:" + responseObject.errorMessage);
     }
-
-    let status = "off"
     let autoStatus = "off";
-        // Hàm được gọi khi một tin nhắn MQTT mới được nhận
+    // Cập nhật biểu đồ mỗi khi nhận được dữ liệu mới từ MQTT
     function onMessageArrived(message) 
     {
-        console.log("onMessageArrived:" + message.payloadString);
-            // Phân tích JSON payload của tin nhắn để lấy dữ liệu nhiệt độ và độ ẩm
-        var data = JSON.parse(message.payloadString);
-        // Cập nhật hiển thị nhiệt độ và độ ẩm trên trang web
-        document.getElementById("temperature").textContent = data["nhiệt độ"];
-        document.getElementById("humidity").textContent = data["độ ẩm"];
-        document.getElementById("cbas").textContent = data["cảm biến ánh sáng"];
-        
-        // Kiểm tra nếu chế độ tự động được bật
-        if (autoStatus == 0) 
+      console.log("onMessageArrived:" + message.payloadString);
+      var data = JSON.parse(message.payloadString);
+      var time = new Date().getTime();
+      // Cập nhật dữ liệu nhiệt độ
+      var temp = parseFloat(data["nhiệt độ"]);
+      chart.series[0].addPoint([time, temp], true, chart.series[0].data.length >= 15);
+      // Cập nhật dữ liệu độ ẩm
+      var humidity = parseFloat(data["độ ẩm"]);
+      chart.series[1].addPoint([time, humidity], true, chart.series[1].data.length >= 15);
+      // Hiển thị dữ liệu trên giao diện
+      document.getElementById("temperature").textContent = temp;
+      document.getElementById("humidity").textContent = humidity;
+      document.getElementById("cbas").textContent = data["cảm biến ánh sáng"];
+      if (data["autoMode"]) {
+        autoStatus = "on"
+        BtnAuto.innerHTML="AUTO-ON"
+        btn2.style.display="none" 
+        if (data["cảm biến ánh sáng"] > 800)
         {
-            const sensorValue = data["cảm biến ánh sáng"];
-            // Nếu giá trị cảm biến ánh sáng thấp, bật đèn
-            if (sensorValue < 800) { // Điều chỉnh giá trị theo yêu cầu
-                alert("Giá trị cảm biến lớn hơn 800 => Bật LED!!!")
-                document.querySelector('.buttonAuto').innerHTML = "AUTO-ON";
-                document.querySelector('.buttonAuto').style.backgroundColor = "#195B6A";
-                document.querySelector('.lightRed').style.backgroundColor = "red"
-                document.querySelector('.lightGreen').style.backgroundColor = "green"
-                document.querySelector('.lightYellow').style.backgroundColor = "yellow"
-            } 
-            else 
-            {
-                alert("Giá trị cảm biến nhỏ hơn 800 => Tắt LED!!!")
-                document.querySelector('.buttonAuto').innerHTML = "AUTO-OFF";
-                document.querySelector('.buttonAuto').style.backgroundColor = "#77878A";
-                document.querySelector('.lightRed').style.backgroundColor = "#77878A"
-                document.querySelector('.lightGreen').style.backgroundColor = "#77878A"
-                document.querySelector('.lightYellow').style.backgroundColor = "#77878A"
-            }
-        } 
-        else 
-        {
-            // Nếu không ở chế độ tự động, cho phép điều khiển bằng tay
-            const statusLight = data["onoff"];
-            if (statusLight == 1) 
-            {
-                document.querySelector('.button2').innerHTML = "OFF";
-                document.querySelector('.button2').style.backgroundColor = "#195B6A";
-                document.querySelector('.lightRed').style.backgroundColor = "red"
-                document.querySelector('.lightGreen').style.backgroundColor = "green"
-                document.querySelector('.lightYellow').style.backgroundColor = "yellow"
-            } 
-            else 
-            {
-                document.querySelector('.button2').innerHTML = "ON";
-                document.querySelector('.button2').style.backgroundColor = "#77878A";
-                document.querySelector('.lightRed').style.backgroundColor = "#77878A"
-                document.querySelector('.lightGreen').style.backgroundColor = "#77878A"
-                document.querySelector('.lightYellow').style.backgroundColor = "#77878A"
-            }
+            status="on"
+            document.querySelector('.lightRed').style.backgroundColor = "red"
+            document.querySelector('.lightGreen').style.backgroundColor = "green"
+            document.querySelector('.lightYellow').style.backgroundColor = "yellow"
         }
+        else {
+        status="off"
+        document.querySelector('.lightRed').style.backgroundColor = "#77878A";
+        document.querySelector('.lightGreen').style.backgroundColor = "#77878A";
+        document.querySelector('.lightYellow').style.backgroundColor = "#77878A";
+        }
+      } else {
+        BtnAuto.innerHTML="AUTO-OFF"
+        autoStatus = "off"
+        btn2.style.display="" 
+      }
 
+
+        document.getElementById("cbas").textContent = data["cảm biến ánh sáng"];
     }
 
-    const BtnAuto =  document.querySelector(".buttonAuto")
-    BtnAuto.addEventListener("click", function () 
-    {
-        if (autoStatus == "off") 
+    // Tạo biểu đồ nhiệt độ và độ ẩm
+    var chart = new Highcharts.Chart({
+    chart: { renderTo: 'chart-container' },
+    title: { text: 'Nhiệt độ và Độ ẩm' },
+    series: [{
+        name: 'Nhiệt độ',
+        color: '#059e8a',
+        data: []
+    }, {
+        name: 'Độ ẩm',
+        color: '#00add6',
+        data: []
+    }],
+    xAxis: { 
+        type: 'datetime', 
+        dateTimeLabelFormats: { second: '%H:%M:%S' },
+        tickInterval: 2000 // Cập nhật mỗi 5 giây
+    },
+    yAxis: [
         {
-            alert("Trạng thái AUTO : ON")
-            BtnAuto.innerHTML = "AUTO-ON"
-            autoStatus = 'on'
-            BtnAuto.style.backgroundColor = "#195B6A"
-            var messageToSend = new Paho.MQTT.Message("autoOn");
-            messageToSend.destinationName = "esp8266/client";
-            client.send(messageToSend);
-        }
-        else 
+          title: {
+            text: 'Nhiệt độ (°C)'
+          }
+        },
         {
-            alert("Trạng thái AUTO : OFF")
-            BtnAuto.innerHTML = "AUTO-OFF"
-            autoStatus = 'off'
-            BtnAuto.style.backgroundColor = "#77878A"
-            var messageToSend = new Paho.MQTT.Message("autoOff");
-            messageToSend.destinationName = "esp8266/client";
-            client.send(messageToSend);
+          title: {
+            text: 'Độ ẩm (%)'
+          },
+          opposite: true
         }
-    }); 
-    const btn2 =  document.querySelector(".button2")
-    btn2.addEventListener("click", function () 
-    {
-        if (status == "off") 
+      ],
+      series: [
         {
-            alert("Bật LED!!!")
-            btn2.innerHTML = "ON"
-            status = 'on'
-            btn2.style.backgroundColor = "#195B6A"
-            console.log("bat")
-            var messageToSend = new Paho.MQTT.Message("on");
-            messageToSend.destinationName = "esp8266/client";
-            client.send(messageToSend);
-        }
-        else 
+          name: 'Nhiệt độ',
+          color: '#059e8a',
+          yAxis: 0,
+          data: []
+        },
         {
-            alert("Tắt LED!!!")
-            btn2.innerHTML = "OFF"
-            status = 'off'
-            btn2.style.backgroundColor = "#77878A"
-            console.log("tat")
-            var messageToSend = new Paho.MQTT.Message("off");
-            messageToSend.destinationName = "esp8266/client";
-            client.send(messageToSend);
+          name: 'Độ ẩm',
+          color: '#00add6',
+          yAxis: 1,
+          data: []
         }
-    }); 
+      ],
+    tooltip: { shared: true },
+    credits: { enabled: false }
+    });
 
-      
+    const btn2 = document.querySelector(".button2");
+    let autoTimeout;
+    const BtnAuto = document.querySelector(".buttonAuto");
+    let status = "off";
+  
 
-</script>
+    BtnAuto.addEventListener("click", function () {
+      if (autoStatus === "off") {
+        BtnAuto.innerHTML = "AUTO-ON";
+        autoStatus = 'on';
+        btn2.style.display='none' 
+        BtnAuto.style.backgroundColor = "#195B6A";
+        var messageToSend = new Paho.MQTT.Message("autoOn");
+        messageToSend.destinationName = "esp8266/client";
+        client.send(messageToSend);
+        clearTimeout(autoTimeout);
+
+        // Hide the ON/OFF button
+        btn2.classList.add("hidden");
+
+        if (status == "off") {
+          btn2.style.backgroundColor = "#195B6A";
+          document.querySelector('.lightRed').style.backgroundColor = "#77878A";
+          document.querySelector('.lightGreen').style.backgroundColor = "#77878A";
+          document.querySelector('.lightYellow').style.backgroundColor = "#77878A";
+        }
+      } else {
+        BtnAuto.innerHTML = "AUTO-OFF";
+        autoStatus = 'off';
+        btn2.style.display="" 
+        BtnAuto.style.backgroundColor = "#77878A";
+        var messageToSend = new Paho.MQTT.Message("autoOff");
+        messageToSend.destinationName = "esp8266/client";
+        client.send(messageToSend);
+        autoTimeout = setTimeout(function () {
+            BtnAuto.click();
+        }, 30000);
+
+        // Show the ON/OFF button
+        btn2.classList.remove("hidden");
+
+        // Turn off the lights when "AUTO-TẮT" is pressed
+        document.querySelector('.lightRed').style.backgroundColor = "#77878A";
+        document.querySelector('.lightGreen').style.backgroundColor = "#77878A";
+        document.querySelector('.lightYellow').style.backgroundColor = "#77878A";
+
+        if (status == "on") {
+          status = "off";
+          btn2.innerHTML = "OFF";
+          // Ensure lights remain off
+          document.querySelector('.lightRed').style.backgroundColor = "#77878A";
+          document.querySelector('.lightGreen').style.backgroundColor = "#77878A";
+          document.querySelector('.lightYellow').style.backgroundColor = "#77878A";
+        }
+      }
+    });
+
+    btn2.addEventListener("click", function () {
+      if (status == "off") {
+        btn2.innerHTML = "ON";
+        status = 'on';
+        btn2.style.backgroundColor = "#195B6A";
+        var messageToSend = new Paho.MQTT.Message("on");
+        messageToSend.destinationName = "esp8266/client";
+        client.send(messageToSend);
+        document.querySelector('.buttonAuto').style.backgroundColor = "#195B6A";
+        document.querySelector('.lightRed').style.backgroundColor = "red";
+        document.querySelector('.lightGreen').style.backgroundColor = "green";
+        document.querySelector('.lightYellow').style.backgroundColor = "yellow";
+      } else {
+        btn2.innerHTML = "OFF";
+        status = 'off';
+        btn2.style.backgroundColor = "#77878A";
+        var messageToSend = new Paho.MQTT.Message("off");
+        messageToSend.destinationName = "esp8266/client";
+        client.send(messageToSend);
+        document.querySelector('.lightRed').style.backgroundColor = "#77878A";
+        document.querySelector('.lightGreen').style.backgroundColor = "#77878A";
+        document.querySelector('.lightYellow').style.backgroundColor = "#77878A";
+      }
+    });
+    
+    </script>
 </html>
